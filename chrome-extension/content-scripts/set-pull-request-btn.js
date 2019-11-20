@@ -26,12 +26,12 @@ function setMergeBtn() {
     var mergeBtn = document.querySelector(
       ".branch-action.branch-action-state-clean details > details-menu > div > button:nth-child(1)"
     );
-    clickBtnWhenReady(mergeBtn);
+    mergeBtn && clickBtnWhenReady(mergeBtn);
   } else {
     var squashBtn = document.querySelector(
       ".branch-action.branch-action-state-clean details > details-menu > div > button:nth-child(2)"
     );
-    clickBtnWhenReady(squashBtn);
+    squashBtn && clickBtnWhenReady(squashBtn);
   }
 }
 
