@@ -8,20 +8,17 @@ var dirtyMergeBtn = document.querySelector(
   ".branch-action.branch-action-state-dirty .merge-message .select-menu button"
 );
 
-var statusHeadingYellow = document.querySelector(
-  ".merge-pr.is-merging > poll-include-fragment > div > div > div > div:nth-child(3) > div.h4.status-heading.text-yellow"
-);
-
-var statusHeading = document.querySelector(
-  ".branch-action-body .status-heading.h4"
-);
+var statusHeadingStates = {
+  yellow: '.text-yellow',
+  red: '.text-red'
+};
 
 function clickBtnWhenReady(btnEl) {
   btnEl.click();
   document.activeElement.blur();
 }
 
-function setMergeBtn() {
+function updateMergeBtn() {
   if (targetBranch === "master") {
     var mergeBtn = document.querySelector(
       ".branch-action.branch-action-state-clean details > details-menu > div > button:nth-child(1)"
@@ -35,26 +32,33 @@ function setMergeBtn() {
   }
 }
 
-function checkIfBtnIsClickable() {
-  if (statusHeading && statusHeading.classList.contains('.text-yellow')) {
-    var MAX_ATTEMPTS = 120;
-    var attempts = 0;
+function observeStatusHeading() {
+  var statusHeadingEl = document.querySelector(
+    ".branch-action-body .status-heading.h4"
+  );
 
-    var intervalID = setInterval(function() {
-      setMergeBtn();
+  var mergeDetailsEl = document.querySelector('.mergeability-details');
 
-      if (
-        ++attempts >= MAX_ATTEMPTS ||
-        !statusHeading.classList.contains(".text-yellow")
-      ) {
-        window.clearInterval(intervalID);
-      }
-    }, 2000);
-  }
+  var observerConfig = {
+    attributes: true,
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributeFilter: ["class"],
+    attributeOldValue: true,
+    characterDataOldValue: true
+  };
 
-  else {
-    setTimeout(setMergeBtn, 1000);
-  }
+  var mutationObserver = new MutationObserver(function(
+    mutationsList,
+    observer
+  ) {
+    console.log(mutationsList, observer);
+    debugger;
+  });
+
+  mutationObserver.observe(document.body, observerConfig);
 }
 
-checkIfBtnIsClickable();
+setTimeout(updateMergeBtn, 0);
+observeStatusHeading();
