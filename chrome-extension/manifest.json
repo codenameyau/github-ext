@@ -6,8 +6,7 @@
   "icons": {
     "19": "assets/github-19.png",
     "38": "assets/github-38.png",
-    "64": "assets/github-64.png",
-    "128": "assets/github-128.png"
+    "64": "assets/github-64.png"
   },
   "content_scripts": [
     {
