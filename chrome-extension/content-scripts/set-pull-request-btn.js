@@ -19,32 +19,26 @@ function clickBtnWhenReady(btnEl) {
 }
 
 function updateMergeBtn() {
+  console.log(targetBranch)
   if (targetBranch === "master") {
     var mergeBtn = document.querySelector(
-      ".branch-action.branch-action-state-clean details > details-menu > div > button:nth-child(1)"
+      ".branch-action-state-clean details-menu > div > button:nth-child(1)"
     );
     mergeBtn && clickBtnWhenReady(mergeBtn);
   } else {
     var squashBtn = document.querySelector(
-      ".branch-action.branch-action-state-clean details > details-menu > div > button:nth-child(2)"
+      ".branch-action-state-clean details-menu > div > button:nth-child(2)"
     );
     squashBtn && clickBtnWhenReady(squashBtn);
   }
 }
 
-function observeStatusHeading() {
-  var statusHeadingEl = document.querySelector(
-    ".branch-action-body .status-heading.h4"
-  );
-
-  var mergeDetailsEl = document.querySelector('.mergeability-details');
-
+function observeMergeBtn() {
   var observerConfig = {
     attributes: true,
     childList: true,
     subtree: true,
     characterData: true,
-    attributeFilter: ["class"],
     attributeOldValue: true,
     characterDataOldValue: true
   };
@@ -53,12 +47,14 @@ function observeStatusHeading() {
     mutationsList,
     observer
   ) {
-    console.log(mutationsList, observer);
-    debugger;
+    setTimeout(updateMergeBtn, 1000);
   });
 
-  mutationObserver.observe(document.body, observerConfig);
+  mutationObserver.observe(
+    document.querySelector(".merge-message .select-menu"),
+    observerConfig
+  );
 }
 
-setTimeout(updateMergeBtn, 0);
-observeStatusHeading();
+setTimeout(updateMergeBtn, 1000);
+// observeMergeBtn();
