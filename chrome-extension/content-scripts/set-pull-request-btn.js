@@ -1,40 +1,54 @@
-var targetBranch = document.querySelector(".commit-ref.base-ref > a > span")
+// Make this customizable via popup.
+const PROD = "master";
+const STAGING = "staging";
+const DEV = "edge";
+
+const targetBranch = document.querySelector(".commit-ref.base-ref > a > span")
   .textContent;
 
-var sourceBranch = document.querySelector(".commit-ref.head-ref > a > span")
+const sourceBranch = document.querySelector(".commit-ref.head-ref > a > span")
   .textContent;
 
-var dirtyMergeBtn = document.querySelector(
+const dirtyMergeBtn = document.querySelector(
   ".branch-action.branch-action-state-dirty .merge-message .select-menu button"
 );
 
-var statusHeadingStates = {
-  yellow: '.text-yellow',
-  red: '.text-red'
+const statusHeadingStates = {
+  yellow: ".text-yellow",
+  red: ".text-red"
 };
+
+const mergeBtn = document.querySelector(
+  ".branch-action-state-clean details-menu > div > button:nth-child(1)"
+);
+
+const squashBtn = document.querySelector(
+  ".branch-action-state-clean details-menu > div > button:nth-child(2)"
+);
 
 function clickBtnWhenReady(btnEl) {
   btnEl.click();
   document.activeElement.blur();
 }
 
+const shouldMerge = (
+  (targetBranch === PROD && sourceBranch === STAGING) ||
+  (targetBranch === STAGING && sourceBranch === DEV)
+);
+
 function updateMergeBtn() {
-  console.log(targetBranch)
-  if (targetBranch === "master") {
-    var mergeBtn = document.querySelector(
-      ".branch-action-state-clean details-menu > div > button:nth-child(1)"
-    );
+  if (shouldMerge) {
     mergeBtn && clickBtnWhenReady(mergeBtn);
   } else {
-    var squashBtn = document.querySelector(
-      ".branch-action-state-clean details-menu > div > button:nth-child(2)"
-    );
     squashBtn && clickBtnWhenReady(squashBtn);
   }
+
+  window.scrollTo && window.scrollTo(0, 0);
 }
 
+// TODO: handle yellow status when checking PR in CI.
 function observeMergeBtn() {
-  var observerConfig = {
+  const observerConfig = {
     attributes: true,
     childList: true,
     subtree: true,
@@ -43,11 +57,12 @@ function observeMergeBtn() {
     characterDataOldValue: true
   };
 
-  var mutationObserver = new MutationObserver(function(
+  const mutationObserver = new MutationObserver(function(
     mutationsList,
     observer
   ) {
-    setTimeout(updateMergeBtn, 1000);
+    setTimeout(updateMergeBtn, 300);
+    mutationObserver.disconnect();
   });
 
   mutationObserver.observe(
@@ -56,5 +71,8 @@ function observeMergeBtn() {
   );
 }
 
-setTimeout(updateMergeBtn, 1000);
-// observeMergeBtn();
+if (mergeBtn && squashBtn) {
+  setTimeout(updateMergeBtn, 300);
+} else {
+  observeMergeBtn();
+}
